@@ -40,7 +40,7 @@ def print_board(board):
 
 
 # Run print_board, pass in board
-print_board(board)
+# print_board(board)
 
 # Use Backtracking approach to find solution
 
@@ -88,14 +88,16 @@ def is_valid_func(board, number, position):
         # [2, 0], [2, 1], [2, 2]
 
         # Create variables to hold x and y for current box
-        box_x = position[1] // 3 # take the col of position coordinate and divide by 3 to get box's x coordinate
-        box_y = position[0] // 3 # take the row of position coordinate and divide by 3 to get box's y coordinate
-        
+        # take the col of position coordinate and divide by 3 to get box's x coordinate
+        box_x = position[1] // 3
+        # take the row of position coordinate and divide by 3 to get box's y coordinate
+        box_y = position[0] // 3
+
         # Now that you have the x, y coordinate of the box youre in,
         # you need to use those x, y to get the range of indices (0-8) for the pos(row, col) you are in
         # EX: Box [2, 1] has indices of [x(3 -> 5), y(6 -> 8)]
         # EX: Box [2, 2] has indices of [x(6 -> 8), y(6 -> 8)]
-    
+
         for i in range(box_y * 3, box_y * 3 + 3):
             for j in range(box_x * 3, box_x * 3 + 3):
                 if board[i][j] == number and (i, j) != position:
@@ -106,8 +108,10 @@ def is_valid_func(board, number, position):
 
 # 3) Solve the board
 # Function that uses find_empty and is_valid functions to solve the board
+
+
 def solve_board_func(board):
-    # Initiate a variable and assign to it the active find_empty function
+    # Initiate a variable called find and assign to it the active find_empty function
     find = find_empty_func(board)
 
     # if find_empty DOES NOT return a position tuple, then you have found the solution
@@ -117,6 +121,33 @@ def solve_board_func(board):
     else:
         row, col = find
 
-        # 3) Find A Number that Works
-        # 4) Repeat
-        # 5) Backtrack (recursive checking)
+    # Loop through values 1-9 and attempt to put them in our solution,
+    # using is_valid func, the row col variables initialized in row 122, and i as the number parameter
+    for i in range(1, 10):
+        if is_valid_func(board, i, (row, col)):
+            # If that i is a valid number, add it to the board
+            board[row][col] = i
+
+            # Then recursively try and finish the solution by calling the solve_board func
+            if solve_board_func(board):
+                return True
+
+            # Else, if trying to recursively finish the solution returns false, then backtrack and instead of setting the value to i, set it to 0 
+            # Essentially, once you go through i values of 1-9 and none work (return false, using is_valid func), then you go back and reset the last element to 0
+            board[row][col] = 0
+
+    return False
+
+# Print Initial Sodoku Board
+print("Initial Sodoku Board")
+print_board(board)
+print(" ")
+
+# Solve the Board
+solve_board_func(board)
+print("Solving...")
+print(" ")
+
+# Print Solved Sodoku Board
+print("Solved Sodoku Board")
+print_board(board)
